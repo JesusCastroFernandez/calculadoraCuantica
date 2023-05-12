@@ -1,0 +1,39 @@
+from qiskit import QuantumCircuit, ClassicalRegister, QuantumRegister
+from qiskit import Aer, execute
+
+# Definir los registros clásicos y cuánticos
+qr = QuantumRegister(2)
+cr = ClassicalRegister(2)
+
+# Definir el circuito cuántico
+qc = QuantumCircuit(qr, cr)
+
+# Pedir al usuario que introduzca los valores a sumar o restar
+op = input("Introduzca la operación (+/-): ")
+num1 = int(input("Introduzca el primer número: "))
+num2 = int(input("Introduzca el segundo número: "))
+
+# Inicializar los qubits con los valores introducidos
+if num1 == 1:
+    qc.x(qr[0])
+if num2 == 1:
+    qc.x(qr[1])
+
+# Realizar la operación de suma o resta
+if op == "+":
+    qc.cx(qr[0], qr[1])
+    qc.measure(qr, cr)
+elif op == "-":
+    qc.x(qr[1])
+    qc.cx(qr[0], qr[1])
+    qc.measure(qr, cr)
+else:
+    print("Operación no válida")
+
+# Ejecutar el circuito cuántico en un simulador
+backend = Aer.get_backend('qasm_simulator')
+job_sim = execute(qc, backend)
+sim_result = job_sim.result()
+
+# Mostrar el resultado de la operación
+print("Resultado de la operación " + op + ": " + str(int(sim_result.get_counts(qc)['00'], 2)))
